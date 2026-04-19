@@ -1,0 +1,58 @@
+# Node modules
+node_modules/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+.Python
+
+# OS files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Skill lock files
+.skills_store_lock.json
+.skills_store_lock
+
+# Temporary files
+*.tmp
+*.temp
+*.log
+*.bak
+
+# API keys and secrets (users should use their own)
+.env
+.env.local
+.env.*.local
+
+# Backup files
+*.backup
+*.back
+*~
+
+# macOS
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Large files (videos, etc.)
+*.mp4
+*.mov
+*.zip
+*.tar
+*.gz
+
+# Private data
+# Remove this line and the files below before uploading to GitHub
+# *-private.md
+# credentials.json
