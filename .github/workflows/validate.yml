@@ -1,0 +1,23 @@
+name: Validate Skills
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Count SKILL.md files
+        run: |
+          count=$(find . -name "SKILL.md" | wc -l)
+          echo "Found $count skills"
+          if [ "$count" -lt 1 ]; then
+            echo "No skills found!"
+            exit 1
+          fi
+      - name: List categories
+        run: ls -d */ 2>/dev/null || echo "No directories"
