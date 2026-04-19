@@ -84,7 +84,10 @@ def validate_skill(path):
     return len(errors) == 0, errors, warns
 
 def main():
-    skills_dir = Path.home() / ".qclaw/workspace/qclaw-skills"
+    # Resolve skills_dir relative to the script location
+    script_dir = Path(__file__).resolve().parent
+    repo_root = script_dir.parent.parent  # .github/scripts → .github → repo root
+    skills_dir = repo_root  # scan from repo root
     passed, failed, warn_list = [], [], []
 
     skill_mds = sorted([p for p in skills_dir.rglob("SKILL.md")
@@ -113,7 +116,7 @@ def main():
         "failed_skills": failed,
         "warning_skills": [[s, w] for s, w in warn_list],
     }
-    with open(skills_dir/"validation_report.json", "w", encoding="utf-8") as f:
+    with open(repo_root/"validation_report.json", "w", encoding="utf-8") as f:
         json.dump(report, f, indent=2, ensure_ascii=False)
 
     if failed:
