@@ -1,4 +1,4 @@
-name: Validate Skills
+name: Skill Quality Gate
 
 on:
   push:
@@ -10,14 +10,48 @@ jobs:
   validate:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - name: Count SKILL.md files
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Run Skill Validator
         run: |
-          count=$(find . -name "SKILL.md" | wc -l)
-          echo "Found $count skills"
-          if [ "$count" -lt 1 ]; then
-            echo "No skills found!"
-            exit 1
-          fi
-      - name: List categories
-        run: ls -d */ 2>/dev/null || echo "No directories"
+          python3 .github/scripts/validate_skills.py
+          cat validation_report.json
+
+      - name: Upload validation report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: validation-report
+          path: validation_report.json
+
+      - name: Fail on critical errors
+        if: failure()
+        run: |
+          echo "❌ Validation failed. Check the report above."
+          exit 1
+
+  score:
+    runs-on: ubuntu-latest
+    needs: validate
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Skill count report
+        run: |
+          TOTAL=$(find . -name "SKILL.md" ! -path "*/node_modules/*" | wc -l)
+          echo "📦 Total skills: $TOTAL"
+          echo "```"
+          echo "| Category | Count |"
+          echo "|----------|-------|"
+          for cat in content finance growth productivity utilities; do
+            CNT=$(find "./$cat" -name "SKILL.md" 2>/dev/null | wc -l | tr -d ' ')
+            if [ "$CNT" -gt 0 ]; then echo "| $cat | $CNT |"; fi
+          done
+          echo "```"
